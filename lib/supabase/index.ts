@@ -1,1 +1,0 @@
-export { createSupabasePublicClient } from "./public";

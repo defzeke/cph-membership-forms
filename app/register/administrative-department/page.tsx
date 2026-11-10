@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { createSupabasePublicClient } from "@/lib/supabase";
+import { saveRecord } from "@/lib/db";
 
 const COOKIE_PREFIX = "registration_";
 
@@ -47,7 +47,6 @@ const getRegistrationCookieValue = (key: string) => {
 
 export default function AdministrativeDepartmentPage() {
   const router = useRouter();
-  const supabase = createSupabasePublicClient();
   const [selectedRole, setSelectedRole] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -84,7 +83,7 @@ export default function AdministrativeDepartmentPage() {
       leadershipQuestion2: String(formData.get("administrativeQuestion2") ?? ""),
     };
 
-    const { error } = await supabase.from("registration_administrative_department").insert({
+    const { error } = await saveRecord("registration_administrative_department", {
       first_name: firstName,
       last_name: lastName,
       email,
@@ -98,7 +97,7 @@ export default function AdministrativeDepartmentPage() {
       return;
     }
 
-    const { error: interviewError } = await supabase.from("to_be_interviewed").insert({
+    const { error: interviewError } = await saveRecord("to_be_interviewed", {
       name: fullName,
       email,
       department: "Administrative",
@@ -120,7 +119,7 @@ export default function AdministrativeDepartmentPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 px-4 py-6 font-sans text-zinc-900">
-      <main className="mx-auto w-full max-w-3xl rounded-2xl border border-sky-100 bg-white/95 p-6 shadow-lg shadow-blue-100 sm:p-8">
+      <main className="mx-auto w-full max-w-3xl rounded-2xl border border-brand-100 bg-white/95 p-6 shadow-lg shadow-black/30 sm:p-8">
         <h1 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Registration - Administrative Department</h1>
 
         <p className="mt-4 text-sm leading-6 text-slate-700">
@@ -133,7 +132,7 @@ export default function AdministrativeDepartmentPage() {
         <p className="mt-4 text-sm leading-6 text-slate-700">
           For detailed information on each department role, you can refer to{" "}
           <a
-            className="font-medium text-sky-700 underline"
+            className="font-medium text-brand-700 underline"
             href="https://docs.google.com/document/d/1dU6wpyFiGRfjeYCiymvxjvigK2m3VN2BdRBaZOwL8ww/edit?tab=t.0#heading=h.vixkji6185jn"
             target="_blank"
             rel="noopener noreferrer"
@@ -143,7 +142,7 @@ export default function AdministrativeDepartmentPage() {
         </p>
 
         <form className="mt-6 space-y-4 text-sm" onSubmit={handleSubmit}>
-          <fieldset className="space-y-3 rounded-xl border border-sky-200 bg-sky-50/70 p-4 sm:col-span-2">
+          <fieldset className="space-y-3 rounded-xl border border-brand-200 bg-brand-50/70 p-4 sm:col-span-2">
             <legend className="px-2 text-sm font-semibold">
               What position would you like to apply for? <span className="text-red-600">*</span>
             </legend>
@@ -182,7 +181,7 @@ export default function AdministrativeDepartmentPage() {
                   </span>
                   <textarea
                     name={`administrativeQuestion${index + 1}`}
-                    className="min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                    className="min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                     required
                   />
                 </label>
@@ -201,7 +200,7 @@ export default function AdministrativeDepartmentPage() {
 
             <button
               type="submit"
-              className="inline-flex h-11 items-center justify-center rounded-md bg-sky-600 px-5 text-sm font-medium text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+              className="inline-flex h-11 items-center justify-center rounded-md bg-brand-600 px-5 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-400"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Saving..." : "Submit"}

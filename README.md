@@ -35,23 +35,6 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Supabase Setup
+## Backend
 
-This project is configured to use Supabase via `@supabase/supabase-js`.
-
-1. Add your keys to `.env`:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
-```
-
-2. Restart the dev server after changing env vars.
-
-3. Use the helpers:
-
-```ts
-import { createSupabasePublicClient } from "@/lib/supabase";
-
-const supabase = createSupabasePublicClient();
-```
+No database yet. Form submits go through `saveRecord` in `lib/db.ts`, which only logs to the console. Neon will plug in there.

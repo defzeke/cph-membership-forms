@@ -5,7 +5,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 
-import { createSupabasePublicClient } from "@/lib/supabase";
+import { saveRecord } from "@/lib/db";
 
 const registerSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),
@@ -90,7 +90,6 @@ const PERSONAL_INFO_RATE_LIMIT_WINDOW_MS = 15 * 1000;
 const PERSONAL_INFO_RATE_LIMIT_STORAGE_KEY = "registration_personal_info_last_submit_at";
 
 type PersonalInfoRecord = {
-  id?: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -121,21 +120,6 @@ const toPersonalInfoRecord = (values: RegisterFormValues): PersonalInfoRecord =>
   college_campus: values.collegeCampus,
   membership_type: values.membershipType,
 });
-
-const isSamePersonalInfo = (existing: PersonalInfoRecord, next: PersonalInfoRecord) =>
-  existing.first_name === next.first_name &&
-  existing.last_name === next.last_name &&
-  existing.email === next.email &&
-  existing.facebook_link === next.facebook_link &&
-  existing.facebook_shared_post === next.facebook_shared_post &&
-  existing.discord_username === next.discord_username &&
-  (existing.linkedin_link ?? null) === (next.linkedin_link ?? null) &&
-  existing.pup_webmail === next.pup_webmail &&
-  existing.phone === next.phone &&
-  existing.course_year_section === next.course_year_section &&
-  existing.certificate_link === next.certificate_link &&
-  existing.college_campus === next.college_campus &&
-  existing.membership_type === next.membership_type;
 
 const registerFieldNames: Array<keyof RegisterFormValues> = [
   "firstName",
@@ -180,7 +164,6 @@ const getSavedValuesFromCookies = (): Partial<Record<keyof RegisterFormValues, s
 function RegisterFormPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createSupabasePublicClient();
   const [errors, setErrors] = useState<Partial<Record<keyof RegisterFormValues, string>>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -270,44 +253,13 @@ function RegisterFormPage() {
 
     const personalInfoPayload = toPersonalInfoRecord(result.data);
 
-    const { data: previousRecord, error: previousRecordError } = await supabase
-      .from("registration_personal_info")
-      .select(
-        "id,first_name,last_name,email,facebook_link,facebook_shared_post,discord_username,linkedin_link,pup_webmail,phone,course_year_section,certificate_link,college_campus,membership_type",
-      )
-      .eq("first_name", personalInfoPayload.first_name)
-      .eq("last_name", personalInfoPayload.last_name)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle<PersonalInfoRecord>();
+    // shortcut: old name-match update/dedupe needed a DB query; redo it in Neon.
+    const { error: saveError } = await saveRecord("registration_personal_info", personalInfoPayload);
 
-    if (previousRecordError) {
+    if (saveError) {
       setIsSubmitting(false);
-      setSubmitError(previousRecordError.message);
+      setSubmitError(saveError.message);
       return;
-    }
-
-    if (previousRecord && isSamePersonalInfo(previousRecord, personalInfoPayload)) {
-      // ponytail: name match with identical info — skip, resubmitting same form is not a duplicate row
-    } else if (previousRecord) {
-      const { error: updateError } = await supabase
-        .from("registration_personal_info")
-        .update(personalInfoPayload)
-        .eq("id", previousRecord.id);
-
-      if (updateError) {
-        setIsSubmitting(false);
-        setSubmitError(updateError.message);
-        return;
-      }
-    } else {
-      const { error: insertError } = await supabase.from("registration_personal_info").insert(personalInfoPayload);
-
-      if (insertError) {
-        setIsSubmitting(false);
-        setSubmitError(insertError.message);
-        return;
-      }
     }
 
     window.localStorage.setItem(PERSONAL_INFO_RATE_LIMIT_STORAGE_KEY, String(Date.now()));
@@ -356,7 +308,7 @@ function RegisterFormPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 px-4 py-6 font-sans text-zinc-900">
-      <main className="mx-auto w-full max-w-3xl rounded-2xl border border-sky-100 bg-white/95 p-6 shadow-lg shadow-blue-100 sm:p-8">
+      <main className="mx-auto w-full max-w-3xl rounded-2xl border border-brand-100 bg-white/95 p-6 shadow-lg shadow-black/30 sm:p-8">
         <h1 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Registration - Personal Information</h1>
         <p className="mt-2 text-sm text-slate-600">
           Please complete this personal information section of the registration.
@@ -375,7 +327,7 @@ function RegisterFormPage() {
               <input
                 type="text"
                 name="firstName"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 defaultValue={getDefaultValue("firstName")}
                 onBlur={handleFieldBlur}
                 required
@@ -388,7 +340,7 @@ function RegisterFormPage() {
               <input
                 type="text"
                 name="lastName"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 defaultValue={getDefaultValue("lastName")}
                 onBlur={handleFieldBlur}
                 required
@@ -401,7 +353,7 @@ function RegisterFormPage() {
               <input
                 type="email"
                 name="email"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 defaultValue={getDefaultValue("email")}
                 onBlur={handleFieldBlur}
                 required
@@ -414,7 +366,7 @@ function RegisterFormPage() {
               <input
                 type="url"
                 name="facebookLink"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 placeholder="https://www.facebook.com/..."
                 defaultValue={getDefaultValue("facebookLink")}
                 onBlur={handleFieldBlur}
@@ -440,7 +392,7 @@ function RegisterFormPage() {
               <input
                 type="url"
                 name="facebookSharedPost"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 placeholder="https://www.facebook.com/..."
                 defaultValue={getDefaultValue("facebookSharedPost")}
                 onBlur={handleFieldBlur}
@@ -454,7 +406,7 @@ function RegisterFormPage() {
               <input
                 type="text"
                 name="discordUsername"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 defaultValue={getDefaultValue("discordUsername")}
                 onBlur={handleFieldBlur}
                 required
@@ -467,7 +419,7 @@ function RegisterFormPage() {
               <input
                 type="url"
                 name="linkedinLink"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 placeholder="https://www.linkedin.com/in/..."
                 defaultValue={getDefaultValue("linkedinLink")}
                 onBlur={handleFieldBlur}
@@ -480,7 +432,7 @@ function RegisterFormPage() {
               <input
                 type="email"
                 name="pupWebmail"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 defaultValue={getDefaultValue("pupWebmail")}
                 onBlur={handleFieldBlur}
                 required
@@ -493,7 +445,7 @@ function RegisterFormPage() {
               <input
                 type="tel"
                 name="phone"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 inputMode="numeric"
                 pattern="09[0-9]{9}"
                 minLength={11}
@@ -512,7 +464,7 @@ function RegisterFormPage() {
               <input
                 type="text"
                 name="courseYearSection"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 placeholder="e.g. BSCpE 2-5"
                 defaultValue={getDefaultValue("courseYearSection")}
                 onBlur={handleFieldBlur}
@@ -526,7 +478,7 @@ function RegisterFormPage() {
               <input
                 type="url"
                 name="certificateLink"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 placeholder="https://drive.google.com/..."
                 defaultValue={getDefaultValue("certificateLink")}
                 onBlur={handleFieldBlur}
@@ -539,7 +491,7 @@ function RegisterFormPage() {
               <span className="font-medium">Which PUP college/campus do you belong to? <span className="text-red-600">*</span></span>
               <select
                 name="collegeCampus"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 required
                 defaultValue={getDefaultValue("collegeCampus")}
                 onBlur={handleFieldBlur}
@@ -596,7 +548,7 @@ function RegisterFormPage() {
               <span className="font-medium">Which department would you like to apply to as a executive/lead? <span className="text-red-600">*</span></span>
               <select
                 name="membershipType"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-sky-500"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 required
                 defaultValue={getDefaultValue("membershipType")}
                 onBlur={handleFieldBlur}
@@ -635,7 +587,7 @@ function RegisterFormPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex h-11 items-center justify-center rounded-md bg-sky-600 px-5 text-sm font-medium text-white transition hover:bg-sky-700"
+            className="inline-flex h-11 items-center justify-center rounded-md bg-brand-600 px-5 text-sm font-medium text-white transition hover:bg-brand-700"
           >
             {isSubmitting ? "Saving..." : "Continue"}
           </button>

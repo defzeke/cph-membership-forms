@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Membership Registration Forms",
-  description: "Official registration form",
+  title: "CyberPH Membership Registration",
+  description: "Official CyberPH membership registration form",
 };
 
 export default function RootLayout({

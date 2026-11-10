@@ -17,14 +17,14 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 px-4 py-6 font-sans text-zinc-900">
-      <main className="mx-auto w-full max-w-3xl rounded-2xl border border-sky-100 bg-white/95 p-6 shadow-lg shadow-blue-100 sm:p-8">
+      <main className="mx-auto w-full max-w-3xl rounded-2xl border border-brand-100 bg-white/95 p-6 shadow-lg shadow-black/30 sm:p-8">
         <h1 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Membership Registration</h1>
         <p className="mt-2 text-sm text-slate-600">
           Please review and acknowledge the data privacy statement before proceeding.
         </p>
 
         <form className="mt-8 space-y-6" onSubmit={handleContinue}>
-          <fieldset className="space-y-3 rounded-xl border border-sky-200 bg-sky-50/70 p-4">
+          <fieldset className="space-y-3 rounded-xl border border-brand-200 bg-brand-50/70 p-4">
             <legend className="px-2 text-sm font-semibold">Data Privacy Statement</legend>
             <p className="text-sm leading-6 text-slate-700">
               By selecting an option below, you confirm your choice regarding the collection and use of your personal information for membership registration and related processing.
@@ -67,7 +67,7 @@ export default function Home() {
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-md bg-sky-600 px-5 text-sm font-medium text-white transition hover:bg-sky-700"
+            className="inline-flex h-11 items-center justify-center rounded-md bg-brand-600 px-5 text-sm font-medium text-white transition hover:bg-brand-700"
           >
             Continue to Registration Form
           </button>

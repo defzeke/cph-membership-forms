@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #dbeafe;
+  --background: #242424;
   --foreground: #0f172a;
 }
 
@@ -12,80 +12,51 @@ html {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  /* CyberPH: 50-200 = weave cream/gold, 500-700 = logo blue */
+  --color-brand-50: #fbf4e2;
+  --color-brand-100: #f2e0b8;
+  --color-brand-200: #dfb765;
+  --color-brand-500: #4a6cbd;
+  --color-brand-600: #3b5ba9;
+  --color-brand-700: #2e4785;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
+  /* charcoal (not pure black, so black banners stand out) + faint dot grid like the banner texture */
+  background-color: var(--background);
+  background-image: radial-gradient(rgba(251, 244, 226, 0.07) 1px, transparent 1.5px);
+  background-size: 24px 24px;
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  position: relative;
-  isolation: isolate;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-body > * {
-  position: relative;
-  z-index: 1;
-}
-
-body::before,
+/* faint logo chevron watermark, bottom-left (shape traced from logo.png) */
 body::after {
   content: "";
   position: fixed;
-  inset: 0;
+  left: -8vh;
+  bottom: -10vh;
+  width: 70vh;
+  height: 70vh;
+  z-index: -1;
   pointer-events: none;
-  z-index: 0;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 314 470'><path d='M0 74 73 0 314 235 73 470 0 395 162 235z' fill='%23fbf4e2' fill-opacity='0.04'/></svg>") no-repeat center / contain;
 }
 
+/* brand tri-color rule pinned to top edge */
 body::before {
-  background:
-    radial-gradient(circle at 12% 20%, rgba(255, 255, 255, 0.55) 0 5px, transparent 6px),
-    radial-gradient(circle at 78% 15%, rgba(255, 255, 255, 0.5) 0 4px, transparent 5px),
-    radial-gradient(circle at 62% 40%, rgba(255, 255, 255, 0.48) 0 6px, transparent 7px),
-    radial-gradient(circle at 25% 58%, rgba(255, 255, 255, 0.42) 0 7px, transparent 8px),
-    radial-gradient(circle at 86% 68%, rgba(255, 255, 255, 0.5) 0 5px, transparent 6px),
-    radial-gradient(circle at 40% 82%, rgba(255, 255, 255, 0.44) 0 6px, transparent 7px),
-    linear-gradient(160deg, #c7e3ff 0%, #9bc8fb 44%, #7fb6f6 100%);
-  animation: sparklePulse 6s ease-in-out infinite;
-}
-
-body::after {
-  background:
-    radial-gradient(circle at 20% 32%, rgba(191, 219, 254, 0.5) 0 34px, transparent 35px),
-    radial-gradient(circle at 75% 28%, rgba(147, 197, 253, 0.45) 0 46px, transparent 47px),
-    radial-gradient(circle at 30% 76%, rgba(125, 211, 252, 0.35) 0 40px, transparent 41px),
-    radial-gradient(circle at 82% 80%, rgba(96, 165, 250, 0.32) 0 52px, transparent 53px);
-  animation: sparkleFloat 14s linear infinite;
-}
-
-@keyframes sparklePulse {
-  0%,
-  100% {
-    filter: brightness(1);
-    opacity: 1;
-  }
-
-  50% {
-    filter: brightness(1.08);
-    opacity: 0.92;
-  }
-}
-
-@keyframes sparkleFloat {
-  0% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
-
-  100% {
-    transform: translateY(0px);
-  }
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: 4px;
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(90deg, #3b5ba9 0 60%, #d6a33c 60% 80%, #b22234 80%);
 }
 
 /* Remove per-page solid gradient wrappers so global theme remains visible. */
@@ -99,12 +70,14 @@ div.flex.min-h-screen.items-center.justify-center {
   background-image: none !important;
 }
 
-/* Match Google Forms-like banners above and below each form card. */
+/* CyberPH banners above and below each form card. */
 main.mx-auto.w-full.max-w-3xl.rounded-2xl {
   position: relative;
   overflow: visible;
-  --cisco-banner-height: clamp(84px, 13vw, 118px);
-  margin-top: calc(var(--cisco-banner-height) + 1rem);
+  /* card width = viewport minus px-4 gutters, capped at max-w-3xl */
+  --card-w: min(100vw - 2rem, 48rem);
+  margin-top: calc(var(--card-w) * 336 / 1632 + 1rem);
+  margin-bottom: calc(var(--card-w) * 120 / 1632 + 1rem);
 }
 
 main.mx-auto.w-full.max-w-3xl.rounded-2xl::before,
@@ -113,20 +86,23 @@ main.mx-auto.w-full.max-w-3xl.rounded-2xl::after {
   position: absolute;
   left: 0;
   width: 100%;
-  height: var(--cisco-banner-height);
   background-repeat: no-repeat;
   background-position: center;
-  background-size: cover;
+  background-size: 100% 100%;
   border-radius: 0.55rem;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+  /* cream edge keeps black banners distinct from dark page */
+  box-shadow: 0 0 0 1px rgba(251, 244, 226, 0.18);
   pointer-events: none;
 }
 
 main.mx-auto.w-full.max-w-3xl.rounded-2xl::before {
-  top: calc(-1 * (var(--cisco-banner-height) + 0.55rem));
-  background-image: url("/cisco_header.png");
+  aspect-ratio: 1632 / 336;
+  bottom: calc(100% + 0.55rem);
+  background-image: image-set(url("/cyberph/header-straight@1x.png") 1x, url("/cyberph/header-straight@2x.png") 2x);
 }
 
 main.mx-auto.w-full.max-w-3xl.rounded-2xl::after {
-  display: none;
+  aspect-ratio: 1632 / 120;
+  top: calc(100% + 0.55rem);
+  background-image: image-set(url("/cyberph/footer-straight@1x.png") 1x, url("/cyberph/footer-straight@2x.png") 2x);
 }
