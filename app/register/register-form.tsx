@@ -74,7 +74,6 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
       discordUsername: String(formData.get("discordUsername") ?? ""),
       linkedinLink: String(formData.get("linkedinLink") ?? ""),
       phone: String(formData.get("phone") ?? ""),
-      courseYearSection: String(formData.get("courseYearSection") ?? ""),
       certificateLink: String(formData.get("certificateLink") ?? ""),
       collegeCampus: String(formData.get("collegeCampus") ?? ""),
       membershipType: String(formData.get("membershipType") ?? ""),
@@ -93,7 +92,6 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
         discordUsername: fieldErrors.discordUsername?.[0],
         linkedinLink: fieldErrors.linkedinLink?.[0],
         phone: fieldErrors.phone?.[0],
-        courseYearSection: fieldErrors.courseYearSection?.[0],
         certificateLink: fieldErrors.certificateLink?.[0],
         collegeCampus: fieldErrors.collegeCampus?.[0],
         membershipType: fieldErrors.membershipType?.[0],
@@ -258,20 +256,6 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
             </label>
 
             <label className="space-y-2 text-sm sm:col-span-2">
-              <span className="font-medium">Course, Year, and Section <span className="text-red-600">*</span></span>
-              <input
-                type="text"
-                name="courseYearSection"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
-                placeholder="e.g. BSCpE 2-5"
-                defaultValue={getDefaultValue("courseYearSection")}
-                onBlur={handleFieldBlur}
-                required
-              />
-              {errors.courseYearSection && <p className="text-xs text-red-600">{errors.courseYearSection}</p>}
-            </label>
-
-            <label className="space-y-2 text-sm sm:col-span-2">
               <span className="font-medium">Valid ID (school or government ID) <span className="text-red-600">*</span></span>
               <input
                 type="url"
@@ -291,7 +275,7 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
                 type="text"
                 name="collegeCampus"
                 className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
-                placeholder="e.g. College of Engineering (CE)"
+                placeholder="e.g. Polytechnic University of the Philippines"
                 defaultValue={getDefaultValue("collegeCampus")}
                 onBlur={handleFieldBlur}
                 required
@@ -300,7 +284,7 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
             </label>
 
             <label className="space-y-2 text-sm sm:col-span-2">
-              <span className="font-medium">Which department would you like to apply to as a executive/lead? <span className="text-red-600">*</span></span>
+              <span className="font-medium">Which department would you like to apply? <span className="text-red-600">*</span></span>
               <select
                 name="membershipType"
                 className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"

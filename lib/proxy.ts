@@ -7,7 +7,6 @@ const REQUIRED_REGISTRATION_COOKIES = [
   "registration_facebookLink",
   "registration_discordUsername",
   "registration_phone",
-  "registration_courseYearSection",
   "registration_certificateLink",
   "registration_collegeCampus",
   "registration_membershipType",

@@ -49,10 +49,6 @@ export const registerSchema = z.object({
   phone: z
     .string()
     .regex(/^09\d{9}$/, "Phone number must be in the format 09xxxxxxxxx"),
-  courseYearSection: z
-    .string()
-    .trim()
-    .regex(/^(BS|BA|AB)/i, "Course, year, and section must start with BS, BA, or AB"),
   certificateLink: z
     .string()
     .trim()
@@ -82,7 +78,6 @@ type PersonalInfoRecord = {
   discord_username: string;
   linkedin_link: string | null;
   phone: string;
-  course_year_section: string;
   certificate_link: string;
   college_campus: string;
 };
@@ -96,7 +91,6 @@ export const toPersonalInfoRecord = (values: RegisterFormValues): PersonalInfoRe
   discord_username: values.discordUsername,
   linkedin_link: values.linkedinLink === "" ? null : values.linkedinLink,
   phone: values.phone,
-  course_year_section: values.courseYearSection,
   certificate_link: values.certificateLink,
   college_campus: values.collegeCampus,
 });
@@ -110,7 +104,6 @@ export const registerFieldNames: Array<keyof RegisterFormValues> = [
   "discordUsername",
   "linkedinLink",
   "phone",
-  "courseYearSection",
   "certificateLink",
   "collegeCampus",
   "membershipType",

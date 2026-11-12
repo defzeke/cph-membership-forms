@@ -20,13 +20,15 @@ CREATE TABLE IF NOT EXISTS registration_personal_info (
   linkedin_link text,
   pup_webmail text, -- no longer asked; kept for older applicants
   phone text NOT NULL,
-  course_year_section text NOT NULL,
+  course_year_section text, -- no longer asked; kept for older applicants
   certificate_link text NOT NULL, -- Google Drive link to a valid ID (older rows: COR)
   college_campus text NOT NULL
 );
 
 -- Existing databases: the form stopped asking for PUP Webmail.
 ALTER TABLE registration_personal_info ALTER COLUMN pup_webmail DROP NOT NULL;
+-- Existing databases: the form stopped asking for course, year, and section.
+ALTER TABLE registration_personal_info ALTER COLUMN course_year_section DROP NOT NULL;
 
 -- One application per email (case-insensitive), to stop spam. Fails if duplicates already exist.
 CREATE UNIQUE INDEX IF NOT EXISTS registration_personal_info_email_key ON registration_personal_info (lower(email));
