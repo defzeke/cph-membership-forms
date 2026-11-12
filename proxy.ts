@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { registrationGuard } from "@/lib/proxy";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/register" || pathname === "/register/") {

@@ -30,7 +30,7 @@
     "@types/react-dom": "^19",
     "@types/ws": "^8.18.2",
     "eslint": "^9",
-    "eslint-config-next": "^15.5.29",
+    "eslint-config-next": "^16.4.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
