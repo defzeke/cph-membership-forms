@@ -35,6 +35,25 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Backend
+## Backend (Neon)
 
-No database yet. Form submits go through `saveRecord` in `lib/db.ts`, which only logs to the console. Neon will plug in there.
+Services are declared in `neon.ts`. `neon deploy` provisions them and writes env vars to `.env.local`.
+
+- **Postgres**: the final Submit calls the `submitApplication` server action (`lib/db.ts`), the only write path. Personal info rides in cookies until then and is re-validated on the server. Writes go over the pooled `DATABASE_URL` with `pg`. Schema is in `db/schema.sql`; apply it with `npm run db:migrate` (uses `DATABASE_URL_UNPOOLED`).
+- **Object Storage**: `lib/storage.ts` (S3 client, bucket `assets`).
+- **Realtime**: enabled on the branch but unused: it rejects tables with RLS on, and every table has RLS.
+
+In dev, `GET /api/neon-health` tests Postgres and Object Storage end to end (404 in production).
+
+### Data model
+
+`db/schema.sql` is the source of truth (comments at the top list every table). In short:
+
+- `registration_personal_info`: the applicant ("user"), saved together with the application on the final Submit.
+- `departments` → `department_roles` → `department_questions`: positions and screening questions. Edit these rows in the Neon console (Tables view); the form reads them on every page load. To change what a question asks, set `active = false` and add a new row, so old answers keep their original question.
+- `applications`: one row per applicant per role, `status` tracks the interview.
+- `department_answers`: one row per answer, keyed by application and question.
+- `application_answers` (view): everything joined, with user id and department id, for reading answers.
+
+Every table has RLS on with no policies, so only the owner role (the app server and you) can read or write.
+
