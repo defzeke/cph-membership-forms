@@ -78,7 +78,7 @@ export default function DepartmentForm({
           For detailed information on each department role, you can refer to{" "}
           <a
             className="font-medium text-brand-700 underline"
-            href="https://docs.google.com/document/d/1dU6wpyFiGRfjeYCiymvxjvigK2m3VN2BdRBaZOwL8ww/edit?tab=t.0#heading=h.vixkji6185jn"
+            href="https://docs.google.com/document/d/1rMXhvOq9RfRmAeAbwcZXsi4QzjhazyQh5WBb72kH0lc/edit?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
           >
