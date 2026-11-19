@@ -9,52 +9,58 @@ export type Department = {
 
 export const DEPARTMENTS: readonly Department[] = [
   {
+    slug: "member",
+    name: "General Member",
+    description:
+      "Join CyberPH as a general member, without an officer or committee role. There are no screening questions and no interview.",
+  },
+  {
     slug: "administrative-department",
     name: "Administration",
     description:
-      "Administration manages CyberPH's official papers, records, finances, and governance workflows. The Secretary leads meeting documentation, liaison, and compliance work, while the Treasurer & Auditor oversees finance, audit, and sales and product marketing.",
+      "Administration keeps CyberPH's papers, records, and rules in order. Meeting & Documentation Officers handle minutes, records, and files, Liaison Officers link officers and departments, and Compliance Officers handle policies, permits, and rules.",
   },
   {
     slug: "people-and-culture-department",
-    name: "People and Culture",
+    name: "Community Development",
     description:
-      "People and Culture looks after CyberPH's members and officers. It covers organization culture (team building, officer socials, appreciation and awards), community engagement (member onboarding, feedback, and community spaces), and growth and expansion (regional chapters and student and industry ambassadors).",
+      "Community Development (formerly People and Culture) looks after CyberPH's members and officers. Talent Development builds members' skills, Human Resource keeps members supported and engaged (both also take committee members under the Community Relations Committee), and Community Expansion grows CyberPH through regional chapters, student advocates, and industry partners.",
   },
   {
     slug: "business-development-department",
     name: "Business Development",
     description:
-      "Business Development builds and keeps CyberPH's partnerships. External Relations handles strategic partnerships and partner management, while Corporate Affairs handles corporate relations and sponsorships, with both delivering the perks and deliverables promised to partners.",
+      "Business Development builds and keeps CyberPH's partnerships and funds. Partnerships handles outreach, sponsors, and partner deliverables, Finance handles budgets and sales, and Merchandise handles suppliers and products.",
   },
   {
     slug: "creatives-department",
     name: "Creatives",
     description:
-      "Creatives, under Creatives Communications, enhances CyberPH's presence and communication to reach and engage internal and external audiences. Its floor and production committees create digital and print materials such as social media graphics, presentations, and advertisements.",
+      "Creatives, under Creatives Communications, shapes how CyberPH looks and sounds. The Floor Committee handles event documentation and on-site decor, while the Creation Committee handles visual and media production such as graphics, reels, and videos.",
   },
   {
     slug: "marketing-department",
     name: "Marketing",
     description:
-      "Marketing, under Creatives Communications, plans and runs initiatives that drive brand awareness, engagement, and growth. Its production committee and social media manager keep CyberPH's message consistent, engaging, and well targeted.",
+      "Marketing, under Creatives Communications, drives brand awareness, engagement, and growth. Marketing Operations runs CyberPH's page and member questions day to day, while Marketing Strategy plans campaigns, event branding, and what to try next.",
   },
   {
     slug: "operations-department",
     name: "Operations",
     description:
-      "Operations is the backbone of logistics and event execution. It covers event operations (guest relations and technical operations such as livestreaming), supply chain and logistics, and event planning with program and speaker coordination.",
+      "Operations is the backbone of logistics and event execution. Event Operations covers guest relations and technical operations such as livestreaming, Event Planning covers program, speaker, and logistics coordination, and the Product and Development Committee runs the helpdesk that logs and resolves tech issues.",
   },
   {
     slug: "strategic-planning-department",
     name: "Strategic Planning",
     description:
-      "Strategic Planning shapes CyberPH's programs. Community Initiatives handles program development and coordination, while Technical Initiatives runs technical training, certifications, hackathons, and CTFs.",
+      "Strategic Planning shapes CyberPH's programs and growth. Strategic Insights tracks trends and what members need, while Program Development designs programs such as training tracks and bootcamps.",
   },
   {
     slug: "technology-department",
     name: "Technology",
     description:
-      "Technology drives CyberPH's technical work. Technology and Innovation covers software development and engineering, IT operations and infrastructure, and security and compliance, while Research and Development covers knowledge and discovery and technology and product innovation.",
+      "Technology drives CyberPH's technical work. Technology and Engineering covers software development, IT operations and infrastructure, and security and compliance, while Research and Innovation covers tech research and new tool and product ideas.",
   },
 ];
 

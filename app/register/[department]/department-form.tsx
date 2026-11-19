@@ -5,24 +5,44 @@ import { useRouter } from "next/navigation";
 
 import { getDepartment } from "@/app/register/departments";
 import { submitApplication } from "@/lib/db";
-import type { Question } from "@/lib/questions";
+import type { Question, Role } from "@/lib/questions";
+
+import SlotPicker from "../slot-picker";
+
+const GROUPS = [
+  ["Executive", "Executives"],
+  ["Lead", "Leads"],
+  ["Committee Member", "Committee Members"],
+] as const;
 
 // Takes the slug, not the config object, so only plain data crosses the server/client boundary.
 export default function DepartmentForm({
   slug,
   roles,
   questions,
+  slots,
 }: {
   slug: string;
-  roles: string[];
+  roles: Role[];
   questions: Question[];
+  slots: string[]; // ISO starts of open interview slots
 }) {
   const department = getDepartment(slug)!;
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState("");
+  const [team, setTeam] = useState("");
+  const [interviewAt, setInterviewAt] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const roleQuestions = questions.filter((q) => q.role === selectedRole);
+  const role = roles.find((r) => r.name === selectedRole);
+  const teams = role?.teams ?? [];
+  // "Group / Team" entries render as <optgroup>s; plain entries go in an unnamed group.
+  const teamGroups = new Map<string, string[]>();
+  for (const t of teams) {
+    const group = t.includes(" / ") ? t.split(" / ")[0] : "";
+    teamGroups.set(group, [...(teamGroups.get(group) ?? []), t]);
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,7 +56,7 @@ export default function DepartmentForm({
 
     const formData = new FormData(event.currentTarget);
     const answers = Object.fromEntries(roleQuestions.map((q) => [q.id, String(formData.get(`question-${q.id}`) ?? "")]));
-    const { error } = await submitApplication(department.slug, selectedRole, answers);
+    const { error } = await submitApplication(department.slug, selectedRole, answers, (role?.interview && interviewAt) || null, team || null);
 
     setIsSubmitting(false);
     if (error) {
@@ -72,27 +92,58 @@ export default function DepartmentForm({
               What position would you like to apply for? <span className="text-red-600">*</span>
             </legend>
 
-            {roles.map((role) => (
-              <label key={role} className="flex items-start gap-3 text-sm">
-                <input
-                  type="radio"
-                  name="role"
-                  value={role}
-                  className="mt-1"
-                  checked={selectedRole === role}
-                  onChange={() => setSelectedRole(role)}
-                  required
-                />
-                <span>{role}</span>
-              </label>
-            ))}
+            {GROUPS.map(([category, label]) => {
+              const group = roles.filter((r) => r.category === category);
+              return group.length > 0 && (
+                <div key={category} className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+                  {group.map(({ name }) => (
+                    <label key={name} className="flex items-start gap-3 text-sm">
+                      <input
+                        type="radio"
+                        name="role"
+                        value={name}
+                        className="mt-1"
+                        checked={selectedRole === name}
+                        onChange={() => {
+                          setSelectedRole(name);
+                          setTeam("");
+                        }}
+                        required
+                      />
+                      <span>{name}</span>
+                    </label>
+                  ))}
+                </div>
+              );
+            })}
           </fieldset>
+
+          {teams.length > 0 && (
+            <label className="block space-y-2 rounded-xl border border-slate-200 bg-white p-4 text-sm">
+              <span className="font-medium">
+                Which team would you like to join? <span className="text-red-600">*</span>
+              </span>
+              <select
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
+                value={team}
+                onChange={(e) => setTeam(e.target.value)}
+                required
+              >
+                <option value="" disabled>Select a team</option>
+                {[...teamGroups].map(([group, list]) => {
+                  const options = list.map((t) => <option key={t} value={t}>{t.split(" / ").at(-1)}</option>);
+                  return group ? <optgroup key={group} label={group}>{options}</optgroup> : options;
+                })}
+              </select>
+            </label>
+          )}
 
           {roleQuestions.length > 0 && (
             <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:col-span-2">
               <p className="text-sm font-medium text-slate-900">
-                These questions are intended to give us a general sense of your interest and experience. For
-                applicants who qualify, a follow-up interview will be scheduled to get to know you even better.
+                Your answers are the first part of the evaluation. We&apos;ll review them first, and only applicants who
+                pass will move on to the interview.
               </p>
 
               {roleQuestions.map((question) => (
@@ -109,6 +160,19 @@ export default function DepartmentForm({
                 </label>
               ))}
             </section>
+          )}
+
+          {role?.interview && slots.length > 0 && (
+            <fieldset className="grid gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-2">
+              <legend className="px-2 text-sm font-semibold">
+                Pick your interview schedule <span className="text-red-600">*</span>
+              </legend>
+              <p className="text-sm text-slate-700 sm:col-span-2">
+                If your answers pass the first evaluation, we&apos;ll interview you at this time. Times are in Philippine
+                time. The interview lasts 20 minutes, so please be ready 5 minutes early. Open slots update live.
+              </p>
+              <SlotPicker slug={slug} initialSlots={slots} value={interviewAt} onChange={setInterviewAt} />
+            </fieldset>
           )}
 
           <div className="mt-6 flex items-center justify-between">
