@@ -237,7 +237,7 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
             </label>
 
             <label className="space-y-2 text-sm sm:col-span-2">
-              <span className="font-medium">Phone Number <span className="text-red-600">*</span></span>
+              <span className="font-medium">Phone Number</span>
               <input
                 type="tel"
                 name="phone"
@@ -250,13 +250,12 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
                 title="Phone number must be in the format 09xxxxxxxxx"
                 defaultValue={getDefaultValue("phone")}
                 onBlur={handleFieldBlur}
-                required
               />
               {errors.phone && <p className="text-xs text-red-600">{errors.phone}</p>}
             </label>
 
             <label className="space-y-2 text-sm sm:col-span-2">
-              <span className="font-medium">Valid ID (school or government ID) <span className="text-red-600">*</span></span>
+              <span className="font-medium">Valid ID (school or government ID)</span>
               <input
                 type="url"
                 name="certificateLink"
@@ -264,7 +263,6 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
                 placeholder="https://drive.google.com/..."
                 defaultValue={getDefaultValue("certificateLink")}
                 onBlur={handleFieldBlur}
-                required
               />
               {errors.certificateLink && <p className="text-xs text-red-600">{errors.certificateLink}</p>}
             </label>

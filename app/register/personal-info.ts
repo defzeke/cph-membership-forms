@@ -48,12 +48,16 @@ export const registerSchema = z.object({
     }, "Please enter a valid LinkedIn link"),
   phone: z
     .string()
-    .regex(/^09\d{9}$/, "Phone number must be in the format 09xxxxxxxxx"),
+    .trim()
+    .regex(/^(09\d{9})?$/, "Phone number must be in the format 09xxxxxxxxx"),
   certificateLink: z
     .string()
     .trim()
-    .url("Please enter a valid URL")
     .refine((value) => {
+      if (value === "") {
+        return true;
+      }
+
       try {
         const url = new URL(value);
         return url.hostname.toLowerCase().includes("drive.google.com");
@@ -77,8 +81,8 @@ type PersonalInfoRecord = {
   facebook_shared_post: string;
   discord_username: string;
   linkedin_link: string | null;
-  phone: string;
-  certificate_link: string;
+  phone: string | null;
+  certificate_link: string | null;
   college_campus: string;
 };
 
@@ -90,8 +94,8 @@ export const toPersonalInfoRecord = (values: RegisterFormValues): PersonalInfoRe
   facebook_shared_post: values.facebookSharedPost,
   discord_username: values.discordUsername,
   linkedin_link: values.linkedinLink === "" ? null : values.linkedinLink,
-  phone: values.phone,
-  certificate_link: values.certificateLink,
+  phone: values.phone === "" ? null : values.phone,
+  certificate_link: values.certificateLink === "" ? null : values.certificateLink,
   college_campus: values.collegeCampus,
 });
 

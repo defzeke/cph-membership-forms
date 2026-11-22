@@ -84,9 +84,9 @@ The applicant. Written once, on the final Submit, in the same transaction as the
 | `discord_username` | `text` | no | | |
 | `linkedin_link` | `text` | **yes** | | `NULL` when the optional field is blank |
 | `pup_webmail` | `text` | **yes** | | **Legacy.** No longer asked; `DROP NOT NULL` kept for older rows |
-| `phone` | `text` | no | | `09xxxxxxxxx` |
+| `phone` | `text` | **yes** | | `09xxxxxxxxx`; `NULL` when the optional field is blank |
 | `course_year_section` | `text` | **yes** | | **Legacy.** No longer asked |
-| `certificate_link` | `text` | no | | Google Drive link to a valid ID (older rows: COR) |
+| `certificate_link` | `text` | **yes** | | Google Drive link to a valid ID (older rows: COR); `NULL` when blank |
 | `college_campus` | `text` | no | | |
 
 Indexes:
@@ -481,8 +481,8 @@ convention, so keep it consistent in your own reporting queries.
 
 1. Edit `db/schema.sql`. Prefer `IF NOT EXISTS` / `OR REPLACE` and guarded `DO` blocks so the
    file stays re-runnable.
-2. For an existing database, add a **conditional** `ALTER` (like the `pup_webmail` and
-   `course_year_section` `DROP NOT NULL` statements) rather than editing the `CREATE TABLE`
+2. For an existing database, add a **conditional** `ALTER` (like the `pup_webmail`,
+   `course_year_section`, `phone`, and `certificate_link` `DROP NOT NULL` statements) rather than editing the `CREATE TABLE`
    alone — `CREATE TABLE IF NOT EXISTS` will not alter an existing table.
 3. Run `npm run db:migrate`.
 4. Update `lib/db.ts` / `lib/questions.ts` to match, and re-run `npm run lint && npm run build`.

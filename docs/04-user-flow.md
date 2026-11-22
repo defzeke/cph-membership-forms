@@ -48,8 +48,8 @@ slug is in `closed` are `disabled` and labelled `" (closed)"`.
 | Facebook Shared Post | `url` | yes | valid URL on `facebook.com`; has a `?` tooltip: "The link to your shared post of CyberPH's Recruitment" |
 | Discord Username | `text` | yes | non-empty, trimmed |
 | LinkedIn Link | `url` | no | empty allowed; if present must be a `linkedin.com` URL |
-| Phone Number | `tel` | yes | `09` + 9 digits (11 characters) |
-| Valid ID (school or government ID) | `url` | yes | valid URL on `drive.google.com` |
+| Phone Number | `tel` | no | empty allowed; if present `09` + 9 digits (11 characters) |
+| Valid ID (school or government ID) | `url` | no | empty allowed; if present a URL on `drive.google.com` |
 | College/campus | `text` | yes | non-empty, trimmed |
 | Department | `select` | yes | one of the eight department names; closed ones disabled |
 

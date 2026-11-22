@@ -18,21 +18,22 @@ Single source of truth: `app/register/personal-info.ts` → `registerSchema` (Zo
 | `facebookSharedPost` | `string().trim().url()` + refine | same, hostname contains `facebook.com` | Please enter a valid Facebook link / Please provide a valid Facebook link to your shared post |
 | `discordUsername` | `string().trim().min(1)` | required | Discord username is required |
 | `linkedinLink` | `string().trim()` or `""` + refine | optional; if non-empty, hostname contains `linkedin.com` | Please enter a valid LinkedIn link |
-| `phone` | `string().regex(/^09\d{9}$/)` | exactly `09` + 9 digits | Phone number must be in the format 09xxxxxxxxx |
-| `certificateLink` | `string().trim().url()` + refine | valid URL whose hostname contains `drive.google.com` | Please enter a valid URL / Please provide a valid Google Drive link to your valid ID |
+| `phone` | `string().trim().regex(/^(09\d{9})?$/)` | optional; if non-empty, exactly `09` + 9 digits | Phone number must be in the format 09xxxxxxxxx |
+| `certificateLink` | `string().trim()` + refine | optional; if non-empty, a URL whose hostname contains `drive.google.com` | Please provide a valid Google Drive link to your valid ID |
 | `collegeCampus` | `string().trim().min(1)` | required | College or campus is required |
 | `membershipType` | `string().trim().min(1)` | required | Department is required |
 
 Notes:
 
 - `.trim()` **transforms** before the other checks, so `"  Juan  "` is stored as `"Juan"`.
-- `facebookLink`, `facebookSharedPost`, and `certificateLink` require a *parseable* URL first
+- `facebookLink` and `facebookSharedPost` require a *parseable* URL first
   (`.url()`), then a hostname check. The hostname check uses `includes`, not equality, so
-  `https://m.facebook.com/...` and `https://drive.google.com/...` pass. It also means a
+  `https://m.facebook.com/...` passes (and `drive.google.com` subpaths for `certificateLink`). It also means a
   look-alike such as `https://facebook.com.evil.test` passes the hostname test — validation is
   about shape, not ownership.
-- `linkedinLink` has **no** `.url()` — it only tries `new URL(value)`, so it behaves like a URL
-  check but reports a single custom message. It is the only optional field.
+- `linkedinLink` and `certificateLink` have **no** `.url()` — they only try `new URL(value)`, so
+  they behave like a URL check but report a single custom message. The optional fields are
+  `linkedinLink`, `phone`, and `certificateLink`; blank ones are stored as `NULL`.
 - `membershipType` is validated but **not stored** (`toPersonalInfoRecord` omits it); it exists
   to route the applicant to a department.
 - Zod 4 is in use. `string().email()` and `error.flatten()` are the legacy spellings still
@@ -77,7 +78,7 @@ Notes:
 
 - Client: `getSavedValuesFromCookies()` parses `document.cookie` on mount to prefill inputs.
 - Server: `submitApplication` reads them with `cookies()` from `next/headers` and re-validates.
-- Proxy: `lib/proxy.ts` checks nine of them for non-empty values to decide navigation.
+- Proxy: `lib/proxy.ts` checks seven of them for non-empty values to decide navigation.
 
 ### Consequences
 
@@ -96,8 +97,8 @@ Notes:
 
 ### Guard vs. validation
 
-`lib/proxy.ts` requires nine cookies, but `registerSchema` requires eleven values
-(`facebookSharedPost` and `linkedinLink` are the difference; `linkedinLink` is optional).
+`lib/proxy.ts` requires seven cookies; `registerSchema` has eleven fields, eight of them required
+(`facebookSharedPost` is the gap; `linkedinLink`, `phone`, and `certificateLink` are optional).
 The mismatch means the proxy can let someone through to a department page with an incomplete
 set, only for the server action to reject at submit time. It fails safe, but it is not a great
 UX. Adding `registration_facebookSharedPost` to `REQUIRED_REGISTRATION_COOKIES` aligns the two.

@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS registration_personal_info (
   discord_username text NOT NULL,
   linkedin_link text,
   pup_webmail text, -- no longer asked; kept for older applicants
-  phone text NOT NULL,
+  phone text,
   course_year_section text, -- no longer asked; kept for older applicants
-  certificate_link text NOT NULL, -- Google Drive link to a valid ID (older rows: COR)
+  certificate_link text, -- optional Google Drive link to a valid ID (older rows: COR)
   college_campus text NOT NULL
 );
 
@@ -29,6 +29,9 @@ CREATE TABLE IF NOT EXISTS registration_personal_info (
 ALTER TABLE registration_personal_info ALTER COLUMN pup_webmail DROP NOT NULL;
 -- Existing databases: the form stopped asking for course, year, and section.
 ALTER TABLE registration_personal_info ALTER COLUMN course_year_section DROP NOT NULL;
+-- Existing databases: phone and valid ID became optional.
+ALTER TABLE registration_personal_info ALTER COLUMN phone DROP NOT NULL;
+ALTER TABLE registration_personal_info ALTER COLUMN certificate_link DROP NOT NULL;
 
 -- One application per email (case-insensitive), to stop spam. Fails if duplicates already exist.
 CREATE UNIQUE INDEX IF NOT EXISTS registration_personal_info_email_key ON registration_personal_info (lower(email));
