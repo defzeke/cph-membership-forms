@@ -302,7 +302,7 @@ Rows are staged in a session-local temp table `seed` that is dropped at the end.
 | --------------- | ----- | --------- |
 | `administrative-department` | Secretary; Treasurer & Auditor | 4 |
 | `people-and-culture-department` (Community Development) | AVP; Talent Development, Human Resource, Community Expansion Team Lead / Co-Lead | 16 |
-| `business-development-department` | AVP; Partnership Lead; Sponsorship Lead | 12 |
+| `business-development-department` | AVP; Partnership Lead; Sponsorship Lead; Finance Lead; Merchandise Lead | 19 |
 | `creatives-department` | AVP; Floor Committee Lead (Documentation, On-site Decor); Creation Committee Lead (Visual, Media Production) | 20 |
 | `marketing-department` | AVP; Marketing Operations Lead; Marketing Strategy Lead | 18 |
 | `operations-department` | AVP; Event Operations, Event Planning, Product and Development Committee Lead | 16 |
@@ -312,6 +312,8 @@ Rows are staged in a session-local temp table `seed` that is dropped at the end.
 Production was moved to this set on 2026-11-19 by hand (the seed doesn't re-run). The old
 "Treasurer & Auditor" role is still there, hidden by `category = NULL`; delete it once nothing
 points at it. Interview windows are not seeded; production's were inserted by hand.
+On 2026-11-23 Business Development's Finance and Merchandise Committees became Finance Lead and
+Merchandise Lead in place (same rows and questions, `teams` cleared like every other `Lead`).
 
 ## Row Level Security
 

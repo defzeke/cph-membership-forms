@@ -267,11 +267,24 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
               {errors.certificateLink && <p className="text-xs text-red-600">{errors.certificateLink}</p>}
             </label>
 
-            <label className="space-y-2 text-sm sm:col-span-2">
-              <span className="font-medium">Which college/campus do you belong to? <span className="text-red-600">*</span></span>
+            <div className="space-y-2 text-sm sm:col-span-2">
+              <div className="flex items-center gap-1.5 font-medium">
+                <span>
+                  Which college/campus do you belong to? <span className="text-red-600">*</span>
+                </span>
+                <details className="relative inline">
+                  <summary className="inline-flex h-4 w-4 cursor-pointer list-none items-center justify-center rounded-full bg-slate-200 text-xs text-slate-600 hover:bg-slate-300 [&::-webkit-details-marker]:hidden">
+                    ?
+                  </summary>
+                  <span className="absolute left-0 top-5 z-10 w-64 rounded-md border border-slate-200 bg-white p-2 text-xs font-normal text-slate-600 shadow-lg">
+                    If you&apos;re not currently studying, type n/a
+                  </span>
+                </details>
+              </div>
               <input
                 type="text"
                 name="collegeCampus"
+                aria-label="Which college/campus do you belong to?"
                 className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-brand-500"
                 placeholder="e.g. Polytechnic University of the Philippines"
                 defaultValue={getDefaultValue("collegeCampus")}
@@ -279,7 +292,7 @@ function RegisterFormPage({ closed }: { closed: string[] }) {
                 required
               />
               {errors.collegeCampus && <p className="text-xs text-red-600">{errors.collegeCampus}</p>}
-            </label>
+            </div>
 
             <label className="space-y-2 text-sm sm:col-span-2">
               <span className="font-medium">Which department would you like to apply? <span className="text-red-600">*</span></span>

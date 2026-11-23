@@ -50,7 +50,7 @@ slug is in `closed` are `disabled` and labelled `" (closed)"`.
 | LinkedIn Link | `url` | no | empty allowed; if present must be a `linkedin.com` URL |
 | Phone Number | `tel` | no | empty allowed; if present `09` + 9 digits (11 characters) |
 | Valid ID (school or government ID) | `url` | no | empty allowed; if present a URL on `drive.google.com` |
-| College/campus | `text` | yes | non-empty, trimmed |
+| College/campus | `text` | yes | non-empty, trimmed; has a `?` tooltip: "If you're not currently studying, type n/a" |
 | Department | `select` | yes | one of the eight department names; closed ones disabled |
 
 The `<form>` carries `noValidate`, so the browser never blocks submission — Zod is the single
